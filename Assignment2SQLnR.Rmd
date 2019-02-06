@@ -1,0 +1,78 @@
+---
+title: "Assignment 2 SQL and R"
+author: "[Kleber Perez - `r format(Sys.Date(), '%B %d, %Y')`](https://www.linkedin.com/in/kleberperez/)" 
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#install.packages("RMySQL")
+# 1. Library
+library(RMySQL)
+
+```
+
+## DBMS Connection Using MySQL
+
+> Choose six recent popular movies.  Ask at least five people that you know (friends, family, classmates, imaginary friends) to rate each of these movie that they have seen on a scale of 1 to 5.  Take the results (observations) and store them in a SQL database.  Load the information into an R dataframe.
+
+```{r}
+# 2. Settings
+db_user <- 'root'
+db_password <- ''
+db_name <- 'MovieDB'
+db_host <- '127.0.0.1' # localhost for local access
+db_port <- 3306
+
+# 3. Read data from db
+mydb <-  dbConnect(MySQL(), user = db_user, password = db_password,
+                 dbname = db_name, host = db_host, port = db_port)
+s <- paste0("SELECT v.*, r.User, r.Rating FROM Movies v INNER JOIN Rating r ON v.Id = r.MovieId;")
+rs <- dbSendQuery(mydb, s)
+df <-  fetch(rs, n = -1)
+df
+on.exit(dbDisconnect(mydb))
+
+```
+
+## Summary
+
+```{r df}
+summary(df)
+```
+
+## Including Plots
+
+```{r, echo=FALSE}
+f <- as.factor(df$Title)
+levels(f)
+plot(f, df$Rating)
+```
+
+<br />
+
+> Deliverables should include your SQL scripts and your R Markdown code, posted to GitHub. 
+
+> This is by design a very open ended assignment.  A variety of reasonable approaches are acceptable.  You can (and should) blank out your SQL password if your solution requires it; otherwise, full credit requires that your code is 'reproducible', with the assumption that I have the same database server and R software.  
+
+<br />
+<br />
+<br />
+<br />
+
+> *Please email to: * <a href="mailto:kleber.perez@live.com">kleber.perez@live.com</a> *for any suggestion.*
+
+<footer class="border-top text-muted fixed-bottom">
+
+        Data 607 Assignment #2 - MSDS 2019 Program.
+
+</footer>
+
+\textbf{Text ignored: END of other links}
+
+
+
